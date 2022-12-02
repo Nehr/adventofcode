@@ -1,5 +1,6 @@
 import re
 
+
 def get_data() -> list:
     print(f"{get_data.__name__}()")
     temp_data = []
@@ -20,6 +21,7 @@ def get_item_points(item) -> int:
             return 3
         case _:
             return 0
+
 
 def get_round_points(outcome) -> int:
     match outcome:
@@ -50,6 +52,7 @@ def calc_win(you, opp) -> int:
                 return 1
     return 0
 
+
 def get_loss_item(opp) -> str:
     match opp:
         case "rock":
@@ -58,6 +61,7 @@ def get_loss_item(opp) -> str:
             return "paper"
         case _:
             return "rock"
+
 
 def get_win_item(opp) -> str:
     match opp:
@@ -92,6 +96,7 @@ def part_two_conclusion(conclusion, opp) -> int:
     your_item = opp
     return get_round_points(0) + get_item_points(your_item)
 
+
 def part_one(data) -> None:
     print(f"\n{part_one.__name__}()\n---------")
     reg_data = re.compile(r'(\w) (\w)')
@@ -123,11 +128,8 @@ def part_two(data) -> None:
     print(f'{total=}')
 
 
-
-
 def main() -> None:
     data = get_data()
-    #print(data)
     part_one(data)
     part_two(data)
     print("\n------\nexit()")
