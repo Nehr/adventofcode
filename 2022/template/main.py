@@ -1,9 +1,10 @@
 """ Advent of code 2022 """
 
 
-def get_data() -> list:
+def get_data(is_test: bool) -> list:
     """Get data from file."""
-    with open('test_data.txt', 'r', encoding='utf-8') as the_file:
+    file_name = 'data.txt' if is_test is True else 'test_data.txt'
+    with open(file_name, 'r', encoding='utf-8') as the_file:
         return the_file.read().splitlines()
 
 
@@ -20,7 +21,7 @@ def part_two(data) -> None:
 
 
 def main() -> None:
-    data = get_data()
+    data = get_data(False)
     part_one(data)
     part_two(data)
     print("\n------\nexit()")
