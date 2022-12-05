@@ -8,13 +8,13 @@ def get_data(is_test: bool) -> list:
         return the_file.read().splitlines()
 
 
-def part_one(data) -> None:
+def part_one(data: list) -> None:
     print(f"\n{part_one.__name__}()\n---------")
     for line in data:
         print(line)
 
 
-def part_two(data) -> None:
+def part_two(data: list) -> None:
     print(f"\n{part_two.__name__}()\n---------")
     for line in data:
         print(line)
