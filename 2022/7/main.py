@@ -1,6 +1,7 @@
 import re
 import json
 import sys
+import copy
 
 
 
@@ -34,7 +35,7 @@ def get_action(line: str) -> dict | None:
     return  None
 
 
-def get_file_or_dir(line: str) -> dict | None:
+def get_file_or_dir(line: str, parent: str) -> dict | None:
     line_is_file = is_file.findall(line)
     if line_is_file:
         this_file = line_is_file[0]
@@ -45,8 +46,10 @@ def get_file_or_dir(line: str) -> dict | None:
         }
     line_is_dir = is_dir.findall(line)
     if line_is_dir:
+        print(f'{line_is_dir=}')
+        print(f'{parent=}')
         this_dir = line_is_dir[0]
-        return mkdir(this_dir, None)
+        return mkdir(this_dir, parent)
     return None
 
 
@@ -77,10 +80,12 @@ def get_total(files: list) -> int:
 
 
 def get_total_from_dir_recursive(dir_name: str, filesystem: dict) -> int:
-    #print(f'dir {dir_name} children: {str(filesystem[dir_name]["children"])}')
+    print(f'dir {dir_name} children: {str(filesystem[dir_name]["children"])}')
     total = get_total(filesystem[dir_name]['files'])
+    key_name = dir_name + ''.join(filesystem[dir_name]["children"])
+    print(f'{key_name=}')
     for child in filesystem[dir_name]['children']:
-        if len(filesystem[child]["children"]) > 0:
+        if len(filesystem[key_name]["children"]) > 0:
             total += get_total_from_dir_recursive(child, filesystem)
         else:
             total += get_total(filesystem[child]['files'])
@@ -133,22 +138,28 @@ def part_one(data: list, count_max: int, print_data: bool) -> dict:
                     full_dir_name = ''.join(current_dir)
                     #parent_dir_name = ''.join(current_dir[:-1])
                     new_dir_name = full_dir_name + action["param"]
-                    filesystem[new_dir_name] = mkdir(action["param"], current_dir)
+                    filesystem[new_dir_name] = mkdir(action["param"], current_dir[-1])
                     current_dir.append(action["param"])
                 else:
-                    current_dir.pop()
+                    if print_data:
+                        print(f'{current_dir=}')
+                    last = current_dir.pop()
+                    if print_data:
+                        print('pop: ', last)
         else:
-            is_file_or_dir = get_file_or_dir(line)
             full_dir_name = ''.join(current_dir)
+            is_file_or_dir = get_file_or_dir(line, current_dir[-1])
             if is_file_or_dir['type'] == 'dir':
                 new_dir_name = full_dir_name + is_file_or_dir['name']
-                filesystem[full_dir_name]['children'].append(new_dir_name)
+                print(f'{is_file_or_dir["name"]=}')
+                print(f'{new_dir_name=}')
+                filesystem[full_dir_name]['children'].append(is_file_or_dir["name"])
             else:
                 the_file = touch(is_file_or_dir['name'], is_file_or_dir['size'])
                 filesystem[full_dir_name]['files'].append(the_file)
                 filesystem[full_dir_name]['size'] += int(the_file['size'])
-    if print_data:
-        print(json.dumps(filesystem, sort_keys=True, indent=4) + '\n')
+    #if print_data:
+        #print(json.dumps(filesystem, sort_keys=True, indent=4) + '\n')
     total = count_total_in_dirs(filesystem, count_max)
     if print_data:
         print(f'\n{total=}')
@@ -161,29 +172,40 @@ def part_two(data: list) -> None:
     unused_space_needed = 30000000
     max_used_disk_size = disk_size - unused_space_needed
     filesystem = part_one(data, 0, False)
+    print(json.dumps(filesystem, sort_keys=True, indent=4) + '\n')
     print(f'{max_used_disk_size=}')
     items = filesystem.items()
     root_size = 0
     for item in items:
         print(item[1]['name'], item[1]['parent'])
-        if item[1]['parent'] == '/':
+        print(f'parents: {item[1]["parent"]}')
+        if item[1]['parent'] is None:
+            root_size += item[1]['size']
+        elif len(item[1]['parent']) > 0:
             print("item has parent /")
             root_size += item[1]['size']
     print(f'{root_size=}')
     print('/ size: ', filesystem["/"]["size"])
+    can_be_removed = []
     for item in items:
-        item_size = item[1]['size']
-        print(f'{item_size=}')
-        print('disk_size - item_size: ', disk_size - item_size)
-        print('disk_size - item_size < max_used_disk_size: ', disk_size - item_size < max_used_disk_size)
-    #for line in data:
-    #    print(line)
+        if item[1]['parent'] is not None:
+            print(f'\n{item[0]}')
+            print(f'parent: {item[1]["parent"]}')
+            item_size = item[1]['size']
+            print(f'{item_size=}')
+            print('root_size - item_size: ', root_size - item_size)
+            print('root_size - item_size < max_used_disk_size: ', root_size - item_size < max_used_disk_size)
+            if root_size - item_size < max_used_disk_size:
+                can_be_removed.append(item)
+    print('\ncan be removed:')
+    for line in can_be_removed:
+        print(line[0], line[1]['size'])
 
 
 def main() -> None:
     data = get_data(False)
     part_one(data, 100000, True)
-    part_two(data)
+    #part_two(data)
     print("\n------\nexit()")
 
 
