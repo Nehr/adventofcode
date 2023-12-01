@@ -1,30 +1,59 @@
-""" Advent of code 2022 """
+""" Advent of code 2023 """
+
+import enum
+import logging
 
 
-def get_data(is_test: bool) -> list:
+class FileType(enum.Enum):
+    TEST = "test_data.txt"
+    REAL = "data.txt"
+
+
+def setup_logger(log_level: int = logging.INFO) -> None:
+    """Setup for logging"""
+    logger = logging.getLogger()
+    logger.setLevel(log_level)
+
+    ch = logging.StreamHandler()
+    ch.setLevel(log_level)
+
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    ch.setFormatter(formatter)
+
+    logger.addHandler(ch)
+
+
+def get_data(file_type: FileType) -> list:
     """Get data from file."""
-    file_name = 'data.txt' if is_test is True else 'test_data.txt'
-    with open(file_name, 'r', encoding='utf-8') as the_file:
-        return the_file.read().splitlines()
-
+    file_name = file_type.value
+    try:
+        with open(file_name, 'r', encoding='utf-8') as the_file:
+            return the_file.read().splitlines()
+    except FileNotFoundError:
+        logging.error("File not found: %s", file_name)
+        return []
 
 def part_one(data: list) -> None:
-    print(f"\n{part_one.__name__}()\n---------")
+    logging.debug("%s()", part_one.__name__)
     for line in data:
-        print(line)
+        logging.debug(line)
+    logging.debug("end %s\n", part_one.__name__)
 
 
 def part_two(data: list) -> None:
-    print(f"\n{part_two.__name__}()\n---------")
+    logging.debug("%s()", part_two.__name__)
     for line in data:
-        print(line)
+        logging.debug("%s 2", line)
+    logging.debug("end %s\n", part_two.__name__)
 
 
 def main() -> None:
-    data = get_data(False)
+    setup_logger(logging.INFO)
+    file_type = FileType.TEST
+    data = get_data(file_type)
     part_one(data)
     part_two(data)
-    print("\n------\nexit()")
+    logging.debug("exit()")
 
 
 if __name__ == "__main__":
