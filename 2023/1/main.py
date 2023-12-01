@@ -13,8 +13,7 @@ def part_one(data: list) -> None:
     print(f"\n{part_one.__name__}()\n---------")
     total = 0
     for line in data:
-        num_raw = re.sub('\D', '', line)
-        num = int(num_raw[0] + num_raw[-1])
+        num = get_num_data(line)
         #print(num_raw, num)
         total += num
     
@@ -23,38 +22,47 @@ def part_one(data: list) -> None:
 
 def part_two(data: list) -> None:
     print(f"\n{part_two.__name__}()\n---------")
+    total = 0
     for line in data:
         #print(line)
-        new_line = replace_number(line)
-        #print(new_line + "\n")
+        new_line = replace_number_text(line)
+        #print(new_line)
+        num = get_num_data(new_line)
+        #print(str(num) + "\n")
+        total += num
+
+    print("total: ", total)
 
 
-#def get_num_data(line: string):
-#    num_raw = re.sub('\D', '', line)
-#    num = int(num_raw[0] + num_raw[-1])
+
+def get_num_data(line: str):
+    num_raw = re.sub('\D', '', line)
+    num = int(num_raw[0] + num_raw[-1])
+    return num
 
 
-def replace_number(text: str) -> str:
+def replace_number_text(text: str) -> str:
     num_dict = {
-      "one": "1",
-      "two": "2",
-      "three": "3",
-      "four": "4",
-      "five": "5",
-      "six": "6",
-      "seven": "7",
-      "eight": "8",
-      "nine": "9",
-      "zero": "0"
+      "one": "o1e",
+      "two": "t2o",
+      "three": "t3e",
+      "four": "f4r",
+      "five": "f5e",
+      "six": "s6x",
+      "seven": "s7n",
+      "eight": "e8h",
+      "nine": "n9e",
+      "zero": "z0o"
     }
-    
+
     for i, j in num_dict.items():
         text = text.replace(i, j)
+
     return text
 
 def main() -> None:
-    data = get_data(False)
-    #part_one(data)
+    data = get_data(True)
+    part_one(data)
     part_two(data)
     print("\n------\nexit()")
 
