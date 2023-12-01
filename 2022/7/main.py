@@ -1,7 +1,7 @@
 import re
 import json
 import sys
-import copy
+#import copy
 
 
 
@@ -80,15 +80,18 @@ def get_total(files: list) -> int:
 
 
 def get_total_from_dir_recursive(dir_name: str, filesystem: dict) -> int:
-    print(f'dir {dir_name} children: {str(filesystem[dir_name]["children"])}')
+    #print(f'dir {dir_name} children: {str(filesystem[dir_name]["children"])}')
     total = get_total(filesystem[dir_name]['files'])
-    key_name = dir_name + ''.join(filesystem[dir_name]["children"])
-    print(f'{key_name=}')
     for child in filesystem[dir_name]['children']:
+        #print(f'{child=}')
+        #print(f'{filesystem[dir_name]=}')
+        key_name = dir_name + child
+        print(f'{key_name=}')
+        print(f'{key_name} children: {filesystem[key_name]["children"]}')
         if len(filesystem[key_name]["children"]) > 0:
-            total += get_total_from_dir_recursive(child, filesystem)
+            total += get_total_from_dir_recursive(key_name, filesystem)
         else:
-            total += get_total(filesystem[child]['files'])
+            total += get_total(filesystem[key_name]['files'])
     return total
 
 
@@ -118,6 +121,12 @@ def count_total_in_dirs(filesystem: dict, max_size: int) -> int:
             total += dir_total
         #print(f'{str(dir_total)} = {dir_total <= max_size}')
     return total
+
+def get_item_parent_name(items, item):
+    parent_name = item[1]["parent"] + item[1]["name"]
+    print(f'{item[1]["parent"]=}')
+
+    return parent_name
 
 
 def part_one(data: list, count_max: int, print_data: bool) -> dict:
@@ -176,15 +185,19 @@ def part_two(data: list) -> None:
     print(f'{max_used_disk_size=}')
     items = filesystem.items()
     root_size = 0
+    filesystem_sizes = {}
     for item in items:
-        print(item[1]['name'], item[1]['parent'])
-        print(f'parents: {item[1]["parent"]}')
+        filesystem_sizes[item[0]] = item[1]['size']
+        print(f'{item[1]["name"]} parent: {item[1]["parent"]}')
         if item[1]['parent'] is None:
             root_size += item[1]['size']
-        elif len(item[1]['parent']) > 0:
-            print("item has parent /")
+        elif item[1]['parent']:
             root_size += item[1]['size']
+            parent_name = get_item_parent_name(items, item) #item[1]["parent"] + item[1]["name"]
+            print(f'{parent_name=}')
+            filesystem_sizes[parent_name] += item[1]['size']
     print(f'{root_size=}')
+    print(f'{filesystem_sizes=}')
     print('/ size: ', filesystem["/"]["size"])
     can_be_removed = []
     for item in items:
@@ -205,7 +218,7 @@ def part_two(data: list) -> None:
 def main() -> None:
     data = get_data(False)
     part_one(data, 100000, True)
-    #part_two(data)
+    part_two(data)
     print("\n------\nexit()")
 
 
