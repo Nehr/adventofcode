@@ -34,14 +34,14 @@ def get_data(file_type: FileType) -> list:
         return []
 
 def part_one(data: list) -> None:
-    logging.debug("%s()", part_one.__name__)
+    logging.info("%s()", part_one.__name__)
     for line in data:
         logging.debug(line)
     logging.debug("end %s\n", part_one.__name__)
 
 
 def part_two(data: list) -> None:
-    logging.debug("%s()", part_two.__name__)
+    logging.info("%s()", part_two.__name__)
     for line in data:
         logging.debug("%s 2", line)
     logging.debug("end %s\n", part_two.__name__)
