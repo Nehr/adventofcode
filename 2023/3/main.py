@@ -82,7 +82,7 @@ def part_one(data: list) -> None:
         else:
             logging.debug("no symbols found")
     for num in num_arr:
-        touching = is_touching(num, symbol_arr)
+        touching = is_number_touching(num, symbol_arr)
         if touching:
             logging.debug("%s is touching (%s)", num.number, touching)
             logging.info("total: %s + %s = %s\n", total, int(num.number), total + int(num.number))
@@ -93,17 +93,31 @@ def part_one(data: list) -> None:
     logging.debug("end %s\n", part_one.__name__)
 
 
-def is_touching(number: NumberObject, symbol: list) -> bool:
+def is_number_touching(number: NumberObject, symbol: list) -> bool:
     logging.debug("%s(number: %s, index: %s, line: %s, length: %s)", 
-                  is_touching.__name__, number.number, number.index, number.line_num, number.length)
+                  is_number_touching.__name__, number.number, number.index, number.line_num, number.length)
     for sym in symbol:
         if abs(number.line_num - sym.line_num) <= 1:
-            #debug_symbol(sym)
-            #logging.debug("lines touching: num.line_num: %s, sym.line_num: %s, abs(): %s", number.line_num, sym.line_num, abs(number.line_num - sym.line_num) <= 1)
             if is_within_range(sym.index, number.index - 1, number.index + number.length):
                 logging.debug("symbols touching [symbol: %s, index: %s, line_num: %s]", sym.symbol, sym.index, sym.line_num)
                 return True
     return False
+
+
+def is_symbol_touching(symbol: SymbolObject, num_arr: list) -> int:
+    logging.debug("%s()", is_symbol_touching.__name__)
+    logging.debug("symbol: %s, index: %s, line: %s", symbol.symbol, symbol.index, symbol.line_num)
+    total_hits = 0
+    values = []
+    for number in num_arr:
+        if abs(number.line_num - symbol.line_num) <= 1:
+            if is_within_range(symbol.index, number.index - 1, number.index + number.length):
+                logging.debug("* touching -> number: %s, num_index: %s, num_line: %s, num_length: %s", number.number, number.index, number.line_num, number.length)
+                total_hits += 1
+                values.append(number.number)
+    if total_hits == 2:
+        return int(values[0]) * int(values[1])
+    return 0
 
 
 def is_within_range(number: int, start: int, end: int) -> bool:
@@ -118,11 +132,11 @@ def get_numbers(line: str) -> list or None:
     return None
 
 
-def debug_instances(instances: list, type: str) -> None:
-    if type == "symbol":
+def debug_instances(instances: list, type_data: str) -> None:
+    if type_data == "symbol":
         for instance in instances:
             debug_symbol(instance)
-    elif type == "number":
+    elif type_data == "number":
         for instance in instances:
             debug_number(instance)
 
@@ -163,17 +177,45 @@ def get_symbol_index(line: str, symbol: str, ind: int) -> int or None:
 
 def part_two(data: list) -> None:
     logging.info("%s()", part_two.__name__)
-    for line in data:
-        logging.debug("%s 2", line)
+    symbol_arr = []
+    num_arr = []
+    total = 0
+    for i, line in enumerate(data):
+        logging.debug(line)
+        nums = get_numbers(line)
+        if nums is not None:
+            for num in nums:
+                ind = 0
+                index = get_number_index(line, num)
+                num_arr.append(NumberObject(num, index, i, len(num)))
+        is_symbols = find_symbols(line)
+        if is_symbols is not None:
+            logging.debug("symbols found: %s", is_symbols)
+            symbol_index_dict = {}
+            for sym in is_symbols:
+                if sym in symbol_index_dict:
+                    symbol_index_dict[sym] += 1
+                else:
+                    symbol_index_dict[sym] = 0
+                ind = symbol_index_dict[sym]
+                logging.debug(symbol_index_dict)
+                index = get_symbol_index(line, sym, ind)
+                symbol_arr.append(SymbolObject(sym, index, i))
+        else:
+            logging.debug("no symbols found")
+    for symbol in symbol_arr:
+        if symbol.symbol == "*":
+            total += is_symbol_touching(symbol, num_arr)
+    logging.info("total: %s", total)
     logging.debug("end %s\n", part_two.__name__)
 
 
 def main() -> None:
-    setup_logger(logging.INFO)
-    file_type = FileType.REAL
+    setup_logger(logging.DEBUG)
+    file_type = FileType.TEST
     data = get_data(file_type)
-    part_one(data)
-    #part_two(data)
+    #part_one(data)
+    part_two(data)
     logging.debug("exit()")
 
 
