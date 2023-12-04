@@ -176,6 +176,10 @@ def get_symbol_index(line: str, symbol: str, ind: int) -> int or None:
 
 
 def part_two(data: list) -> None:
+    """ Part two: not done
+        Problem: when the same number appears twice on the same line, it will only check the first one
+        CBA fixing this
+    """
     logging.info("%s()", part_two.__name__)
     symbol_arr = []
     num_arr = []

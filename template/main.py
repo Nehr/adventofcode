@@ -48,7 +48,7 @@ def part_two(data: list) -> None:
 
 
 def main() -> None:
-    setup_logger(logging.INFO)
+    setup_logger(logging.DEBUG)
     file_type = FileType.TEST
     data = get_data(file_type)
     part_one(data)
