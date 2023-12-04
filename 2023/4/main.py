@@ -6,7 +6,7 @@ import re
 
 
 class FileType(enum.Enum):
-    TEST = "test_data.txt"
+    TEST = "test_data2.txt"
     REAL = "data.txt"
 
 
@@ -95,16 +95,24 @@ def part_one(data: list) -> None:
 def part_two(data: list) -> None:
     logging.info("%s()", part_two.__name__)
     for line in data:
-        logging.debug("%s 2", line)
+        logging.debug("%s", line)
+        card = get_card_data(line)
+        if card is None:
+            logging.error("card is None")
+            continue
+        card_array = card['winning_numbers']
+        user_data = get_user_data(line)
+        common_numbers_count = count_common_numbers(card_array, user_data)
+        logging.debug("common numbers count: %s", common_numbers_count)
     logging.debug("end %s\n", part_two.__name__)
 
 
 def main() -> None:
     setup_logger(logging.DEBUG)
-    file_type = FileType.REAL
+    file_type = FileType.TEST
     data = get_data(file_type)
-    part_one(data)
-    #part_two(data)
+    #part_one(data)
+    part_two(data)
     logging.debug("exit()")
 
 
