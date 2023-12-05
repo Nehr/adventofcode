@@ -36,13 +36,13 @@ def get_data(file_type: FileType) -> list:
 
 
 def get_card_data(line: str) -> dict or None:
-    #logging.debug("%s()", get_card_data.__name__)
+    logging.debug("%s()", get_card_data.__name__)
     match = re.search(r'Card\s*(\d+):\s*((\d+\s*)*)\|', line)
     if match:
-        #logging.debug("card: %s", match.group(1))
+        logging.debug("card: %s", match.group(1))
         numbers = re.findall(r'\d+', match.group(2))
         winning_numbers = [int(num) for num in numbers]
-        #logging.debug("winning numbers: %s", winning_numbers)
+        logging.debug("winning numbers: %s", winning_numbers)
         return {
             'card': int(match.group(1)),
             'winning_numbers': winning_numbers
@@ -51,12 +51,12 @@ def get_card_data(line: str) -> dict or None:
 
 
 def get_user_data(line: str) -> list or None:
-    #logging.debug("%s()", get_user_data.__name__)
+    logging.debug("%s()", get_user_data.__name__)
     match = re.search(r'\|\s*((\d+)\s*)*', line)
     if match:
         numbers = re.findall(r'\d+', match.group(0))
         user_data = [int(num) for num in numbers]
-        #logging.debug("user data: %s", user_data)
+        logging.debug("user data: %s", user_data)
         return user_data
     return None
 
@@ -148,7 +148,7 @@ def main() -> None:
     setup_logger(logging.INFO)
     file_type = FileType.REAL
     data = get_data(file_type)
-    #part_one(data)
+    part_one(data)
     part_two(data)
     logging.debug("exit()")
 
