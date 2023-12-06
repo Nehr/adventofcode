@@ -62,8 +62,8 @@ def extract_times_and_distances_part_two(data: list) -> dict:
 
 def get_values(times: list, distances: list) -> dict:
     values = {}
-    for time_index, time in enumerate(times):
-        logging.debug("time: %s", time)
+    for time_index, _time in enumerate(times):
+        logging.debug("time: %s", _time)
         logging.debug("time_index: %s", time_index)
         for i in range(times[time_index]):
             distance_calc = i * (times[time_index] - i)
@@ -171,13 +171,13 @@ def main() -> None:
     logging.info("Part one took %s seconds to run.", execution_time)
 
     start_time = time.time()
-    part_two(data)
+    part_two(data) # 29 sec brute force on my comp
     end_time = time.time()
     execution_time = end_time - start_time
     logging.info("Part two took %s seconds to run.", execution_time)
     
     start_time = time.time()
-    part_two_another_try(data, file_type)
+    part_two_another_try(data, file_type) # 5 sec on my comp
     end_time = time.time()
     execution_time = end_time - start_time
     logging.info("Part two another try took %s seconds to run.", execution_time)
