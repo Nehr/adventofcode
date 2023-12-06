@@ -3,7 +3,7 @@
 import enum
 import logging
 import re
-
+import time
 
 class FileType(enum.Enum):
     TEST = "test_data.txt"
@@ -76,6 +76,27 @@ def get_values(times: list, distances: list) -> dict:
     return values
 
 
+def get_min_value(times: list, distances: list) -> int:
+    for time_index, _time in enumerate(times):
+        logging.debug("time: %s", time)
+        logging.debug("time_index: %s", time_index)
+        for i in range(times[time_index]):
+            distance_calc = i * (times[time_index] - i)
+            logging.debug("i * (times[time] - i) = %s", distance_calc)
+            if distance_calc > distances[time_index]:
+                return i
+
+
+def get_max_value(times: list, distances: list) -> int:
+    for time_index, _time in enumerate(times):
+        logging.debug("time: %s", time)
+        logging.debug("time_index: %s", time_index)
+        for i in range(times[time_index], -1, -1):
+            distance_calc = i * (times[time_index] - i)
+            logging.debug("i * (times[time] - i) = %s", distance_calc)
+            if distance_calc > distances[time_index]:
+                return i
+
 
 def part_one(data: list) -> int:
     logging.info("%s()", part_one.__name__)
@@ -88,6 +109,30 @@ def part_one(data: list) -> int:
     total = calc_values(values)
     logging.info("total: %s", total)
     logging.debug("end %s\n", part_one.__name__)
+
+
+def part_two_another_try(data: list, file_type: FileType) -> int:
+    logging.info("%s()", part_two_another_try.__name__)
+    expected_result = 0
+    if file_type == FileType.TEST:
+        expected_result = 71503
+    else:
+        expected_result = 36530883
+    times_and_distances = extract_times_and_distances_part_two(data)
+    times = times_and_distances['times']
+    distances = times_and_distances['distances']
+    logging.debug("times: %s", times)
+    logging.debug("distances: %s", distances)
+    min_value = get_min_value(times, distances)
+    logging.debug("min_value: %s", min_value)
+    max_value = get_max_value(times, distances)
+    logging.debug("max_value: %s", max_value)
+    #values = get_values(times, distances)
+    #total = calc_values(values)
+    total = (max_value - min_value) + 1
+    logging.info("expected_result %s == total %s : %s", expected_result, total, expected_result == total)
+    logging.info("total: %s", total)
+    logging.debug("end %s\n", part_two_another_try.__name__)
 
 
 def calc_values(values: dict) -> int:
@@ -118,8 +163,25 @@ def main() -> None:
     setup_logger(logging.INFO)
     file_type = FileType.REAL
     data = get_data(file_type)
+    
+    start_time = time.time()
     part_one(data)
+    end_time = time.time()
+    execution_time = end_time - start_time
+    logging.info("Part one took %s seconds to run.", execution_time)
+
+    start_time = time.time()
     part_two(data)
+    end_time = time.time()
+    execution_time = end_time - start_time
+    logging.info("Part two took %s seconds to run.", execution_time)
+    
+    start_time = time.time()
+    part_two_another_try(data, file_type)
+    end_time = time.time()
+    execution_time = end_time - start_time
+    logging.info("Part two another try took %s seconds to run.", execution_time)
+    
     logging.debug("exit()")
 
 
