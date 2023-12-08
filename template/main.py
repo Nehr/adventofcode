@@ -2,6 +2,7 @@
 
 import enum
 import logging
+import argparse
 
 
 class FileType(enum.Enum):
@@ -37,23 +38,31 @@ def part_one(data: list) -> None:
     logging.info("%s()", part_one.__name__)
     for line in data:
         logging.debug(line)
-    logging.debug("end %s\n", part_one.__name__)
 
 
 def part_two(data: list) -> None:
     logging.info("%s()", part_two.__name__)
     for line in data:
-        logging.debug("%s 2", line)
-    logging.debug("end %s\n", part_two.__name__)
+        logging.debug("%s", line)
 
 
 def main() -> None:
-    setup_logger(logging.DEBUG)
-    file_type = FileType.TEST
+    parser = argparse.ArgumentParser(description='Advent of code 2023')
+    parser.add_argument('--real', action='store_true', default=False)
+    args = parser.parse_args()
+
+    if args.real:
+        setup_logger(logging.INFO)
+        file_type = FileType.REAL
+    else:
+        setup_logger(logging.DEBUG)
+        file_type = FileType.TEST
     data = get_data(file_type)
     part_one(data)
-    part_two(data)
-    logging.debug("exit()")
+    logging.debug("end %s\n", part_one.__name__)
+    #part_two(data)
+    logging.debug("end %s\n", part_two.__name__)
+    logging.debug("end %s()", main.__name__)
 
 
 if __name__ == "__main__":
