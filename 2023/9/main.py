@@ -58,6 +58,34 @@ class DifferenceObject:
         return str(self.answer)
 
 
+def add_new_nums_to_end(difference: list) -> None:
+    for ind, diff in enumerate(difference):
+        logging.debug("Difference: %s, index: %s", diff, ind)
+        if len(difference) >= ind + 1:
+            if ind > 0:
+                last_num = difference[ind - 1][-1]
+            else:
+                last_num = 0
+            logging.debug("last_num: %s", last_num)
+            new_num = diff[-1] + last_num
+            difference[ind].append(new_num)
+            logging.debug("difference[ind + 1]: %s, new_num: %s", difference[ind], new_num)
+
+
+def add_new_nums_to_start(difference: list) -> None:
+    for ind, diff in enumerate(difference):
+        logging.debug("Difference: %s, index: %s", diff, ind)
+        if len(difference) >= ind + 1:
+            if ind > 0:
+                last_num = difference[ind - 1][0]
+            else:
+                last_num = 0
+            logging.debug("last_num: %s", last_num)
+            new_num = diff[0] - last_num
+            difference[ind].insert(0, new_num)
+            logging.debug("difference[ind + 1]: %s, new_num: %s", difference[ind], new_num)
+
+
 def part_one(data: list) -> None:
     logging.info("%s()", part_one.__name__)
     values = []
@@ -87,17 +115,7 @@ def part_one(data: list) -> None:
     for _key, ans in answers.items():
         logging.debug("original values: %s", ans.original_values)
         logging.debug("index: %s, difference: %s (%s), answer: %s", ans.index, len(ans.difference), ans.difference, ans.answer)
-        for ind, diff in enumerate(ans.difference):
-            logging.debug("Difference: %s, index: %s", diff, ind)
-            if len(ans.difference) >= ind + 1:
-                if ind > 0:
-                    last_num = ans.difference[ind - 1][-1]
-                else:
-                    last_num = 0
-                logging.debug("last_num: %s", last_num)
-                new_num = diff[-1] + last_num
-                ans.difference[ind].append(new_num)
-                logging.debug("ans.difference[ind + 1]: %s, new_num: %s", ans.difference[ind], new_num)
+        add_new_nums_to_end(ans.difference)
         new_og = ans.difference[-1][-1] + int(ans.original_values[-1])
         logging.debug("last number to add to og: %s", new_og)
         ans.original_values.append(new_og)
@@ -105,11 +123,48 @@ def part_one(data: list) -> None:
         total += new_og
         logging.debug("")
     logging.info("Total: %s", total)
+    logging.debug("end %s\n", part_one.__name__)
 
 def part_two(data: list) -> None:
     logging.info("%s()", part_two.__name__)
+    values = []
+    answers = {}
+    total = 0
     for line in data:
-        logging.debug("%s", line)
+        #logging.debug(line)
+        values.extend([line.split()])
+    #logging.debug("values: %s", values)
+    for index, val_arr in enumerate(values):
+        #logging.debug("val_arr: %s", val_arr)
+        diff_list = []
+        last_diffs = get_differences(val_arr)
+        diff_list.append(last_diffs)
+        running = True
+        while running is True:
+            diffs = get_differences(last_diffs)
+            #logging.debug("diffs: %s", diffs)
+            diff_list.append(diffs)
+            last_diffs = diffs
+            if all(diff == 0 for diff in last_diffs):
+                #logging.debug("All differences are zero.")
+                running = False
+                continue
+        
+        answers[index] = DifferenceObject(index, val_arr, list(reversed(diff_list)), 0)
+    for _key, ans in answers.items():
+        logging.debug("original values: %s", ans.original_values)
+        logging.debug("index: %s, difference: %s (%s), answer: %s", ans.index, len(ans.difference), ans.difference, ans.answer)
+        add_new_nums_to_start(ans.difference)
+        new_og = ans.difference[-1][0] - int(ans.original_values[0])
+        logging.debug("ans.difference[-1][0]: %s", ans.difference[-1][0])
+        logging.debug("int(ans.original_values[0]): %s", int(ans.original_values[0]))
+        logging.debug("last number to add to og: %s", new_og)
+        ans.original_values.append(new_og)
+        logging.debug("new original values: %s", ans.original_values)
+        total -= new_og
+        logging.debug("")
+    logging.info("Total: %s", total)
+    logging.debug("end %s\n", part_two.__name__)
 
 
 def main() -> None:
@@ -124,10 +179,8 @@ def main() -> None:
         setup_logger(logging.DEBUG)
         file_type = FileType.TEST
     data = get_data(file_type)
-    part_one(data)
-    logging.debug("end %s\n", part_one.__name__)
-    #part_two(data)
-    logging.debug("end %s\n", part_two.__name__)
+    #part_one(data)
+    part_two(data)
     logging.debug("end %s()", main.__name__)
 
 
