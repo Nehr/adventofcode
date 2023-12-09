@@ -40,12 +40,14 @@ def part_one(data: list) -> None:
     logging.info("%s()", part_one.__name__)
     for line in data:
         logging.debug(line)
+    logging.debug("end %s\n", part_one.__name__)
 
 
 def part_two(data: list) -> None:
     logging.info("%s()", part_two.__name__)
     for line in data:
         logging.debug("%s", line)
+    logging.debug("end %s\n", part_two.__name__)
 
 
 def main() -> None:
@@ -61,9 +63,7 @@ def main() -> None:
         file_type = FileType.TEST
     data = get_data(file_type)
     part_one(data)
-    logging.debug("end %s\n", part_one.__name__)
     #part_two(data)
-    logging.debug("end %s\n", part_two.__name__)
     logging.debug("end %s()", main.__name__)
 
 
