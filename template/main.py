@@ -18,7 +18,8 @@ def setup_logger(log_level: int = logging.INFO) -> None:
     ch = logging.StreamHandler()
     ch.setLevel(log_level)
 
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', 
+                                  datefmt='%Y-%m-%d %H:%M:%S')
     ch.setFormatter(formatter)
 
     logger.addHandler(ch)
@@ -33,6 +34,7 @@ def get_data(file_type: FileType) -> list:
     except FileNotFoundError:
         logging.error("File not found: %s", file_name)
         return []
+
 
 def part_one(data: list) -> None:
     logging.info("%s()", part_one.__name__)
